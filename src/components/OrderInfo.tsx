@@ -1,11 +1,11 @@
 // src/components/OrderInfo.tsx
 import React from "react";
-import { CalendarDays, Clock, Tag, Package } from "lucide-react";
+import { CalendarDays, Clock, Tag } from "lucide-react";
 
 type OrderInfoProps = {
   slaughterDate: string;
   orderDeadline: string;
-  cowPrice: string;
+  cowHeadPrice: string;
   slotPrice: string;
   cowLegs: string;
   cowTailPrice: string;
@@ -14,7 +14,7 @@ type OrderInfoProps = {
 const OrderInfo: React.FC<OrderInfoProps> = ({
   slaughterDate,
   orderDeadline,
-  cowPrice,
+  cowHeadPrice,
   slotPrice,
   cowLegs,
   cowTailPrice,
@@ -35,7 +35,7 @@ const OrderInfo: React.FC<OrderInfoProps> = ({
         </p>
       </div>
       <div className="flex items-center gap-2">
-        <Package className="w-5 h-5 text-gray-700" />
+        <Tag className="w-5 h-5 text-gray-700" />
         <p className="text-sm sm:text-base">
           <span className="font-semibold">Price per Slot:</span> {slotPrice}
         </p>
@@ -43,11 +43,11 @@ const OrderInfo: React.FC<OrderInfoProps> = ({
       <div className="flex items-center gap-2">
         <Tag className="w-5 h-5 text-gray-700" />
         <p className="text-sm sm:text-base">
-          <span className="font-semibold">Cow Head Price:</span> {cowPrice}
+          <span className="font-semibold">Cow Head Price:</span> {cowHeadPrice}
         </p>
       </div>
       <div className="flex items-center gap-2">
-        <Package className="w-5 h-5 text-gray-700" />
+        <Tag className="w-5 h-5 text-gray-700" />
         <p className="text-sm sm:text-base">
           <span className="font-semibold">Cow Legs:</span> {cowLegs}
         </p>

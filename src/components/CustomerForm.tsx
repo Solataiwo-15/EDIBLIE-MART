@@ -20,7 +20,7 @@ const CustomerForm: React.FC<Props> = ({ formData, handleChange }) => {
           name="name"
           value={formData.name}
           onChange={handleChange}
-          placeholder="Full Name"
+          placeholder="Name"
           required
           className="w-full border border-gray-300 rounded-lg p-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500"
         />

@@ -87,7 +87,16 @@ const AdminDashboard: React.FC<Props> = ({ setIsAdminLoggedIn }) => {
     const doc = new jsPDF();
 
     const headers = [
-      ["Order ID", "Name", "Phone", "Mode of Collection", "Address", "Items"],
+      [
+        "Order ID",
+        "Name",
+        "Phone",
+        "Mode of Collection",
+        "Address",
+        "Items",
+        "paid",
+        "status",
+      ],
     ];
 
     const rows = orders.map((order) => [

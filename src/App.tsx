@@ -21,7 +21,7 @@ const App: React.FC = () => {
 
   return (
     <Router>
-      <div className="min-h-screen bg-gradient-to-b from-green-50 via-white to-green-100 max-w-xl mx-auto px-4 sm:px-6 lg:max-w-3xl lg:px-8 py-6">
+      <div className="min-h-screen bg-green-50 max-w-xl mx-auto px-4 sm:px-6 lg:max-w-3xl lg:px-8 py-6">
         <Header />
         <Routes>
           <Route path="/" element={<Home />} />

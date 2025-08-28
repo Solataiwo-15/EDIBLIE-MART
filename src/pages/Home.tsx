@@ -107,11 +107,11 @@ const Home: React.FC = () => {
   return (
     <div className="max-w-xl mx-auto px-4 sm:px-6 lg:max-w-3xl lg:px-8 py-6 pt-16">
       <OrderInfo
-        slaughterDate="Friday, 29th Aug"
+        slaughterDate="Saturday, 30th Aug"
         orderDeadline="Thursday, 28th Aug 11:59 PM"
-        cowPrice="₦50,000 - ₦70,000"
-        slotPrice="Half slot"
-        cowLegs="4 available, half leg sale possible"
+        cowHeadPrice="Ranges between ₦50,000 - ₦70,000"
+        slotPrice="₦7,500"
+        cowLegs="4 available(FCFS) Price ranges between ₦7,000 - ₦10,000"
         cowTailPrice="₦30,000 - ₦40,000"
       />
       {/* Form */}

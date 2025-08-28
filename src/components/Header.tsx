@@ -9,7 +9,7 @@ const Header: React.FC = () => {
   return (
     <header className="w-full fixed top-0 left-0 bg-white z-50 shadow-sm">
       {/* Top Bar */}
-      <nav className="flex items-center justify-between px-4 py-3 bg-white border-b shadow-sm">
+      <nav className="flex items-center justify-between px-6 py-3 bg-white border-b shadow-sm">
         <h1 className="text-xl sm:text-2xl font-bold text-gray-800">
           EDIBLE MART
         </h1>
@@ -66,7 +66,7 @@ const Header: React.FC = () => {
             <li>
               <NavLink
                 to="/admin-login"
-                className="ptext-gray-700 hover:text-gray-900 no-underline font-semibold text-base"
+                className="text-gray-700 hover:text-gray-900 no-underline font-semibold text-base"
                 onClick={() => setMenuOpen(false)}
               >
                 Admin
