@@ -111,7 +111,7 @@ const AdminDashboard: React.FC<Props> = ({ setIsAdminLoggedIn }) => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div className="min-h-screen flex flex-col ">
       {/* Top Navbar */}
       <header className="mt-10 left-0 w-full flex justify-between items-center px-4 py-2">
         <h1 className="text-xl font-bold">Admin Dashboard</h1>
