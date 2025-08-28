@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -11,17 +11,17 @@ import AdminDashboard from "./pages/AdminDashboard";
 import Header from "./components/Header";
 
 const App: React.FC = () => {
-  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(
-    localStorage.getItem("adminLoggedIn") === "true"
-  );
+  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
+
+  useEffect(() => {
+    // Initialize login state from localStorage
+    const stored = localStorage.getItem("adminLoggedIn");
+    setIsAdminLoggedIn(stored === "true");
+  }, []);
 
   return (
     <Router>
-      <div
-        className="min-h-screen bg-gradient-to-b from-green-50 via-white to-green-100
-max-w-xl mx-auto px-4 sm:px-6 lg:max-w-3xl lg:px-8 py-6"
-      >
-        {/* Header */}
+      <div className="min-h-screen bg-gradient-to-b from-green-50 via-white to-green-100 max-w-xl mx-auto px-4 sm:px-6 lg:max-w-3xl lg:px-8 py-6">
         <Header />
         <Routes>
           <Route path="/" element={<Home />} />
@@ -39,12 +39,13 @@ max-w-xl mx-auto px-4 sm:px-6 lg:max-w-3xl lg:px-8 py-6"
               isAdminLoggedIn ? (
                 <AdminDashboard setIsAdminLoggedIn={setIsAdminLoggedIn} />
               ) : (
-                <Navigate to="/admin" />
+                <Navigate to="/admin-login" replace />
               )
             }
           />
 
-          <Route path="*" element={<Navigate to="/" />} />
+          {/* Fallback for unknown routes */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </div>
     </Router>
