@@ -56,6 +56,9 @@ const OrderForm: React.FC<Props> = ({ formData, setFormData }) => {
             <option value="Half slot Agemawo">Half slot Agemawo</option>
             <option value="1 slot Beef">1 slot Beef</option>
             <option value="1 slot Agemawo">1 slot Agemawo</option>
+            <option value="1 slot Agemawo + inu eran">
+              1 slot Agemawo + Inu
+            </option>
             <option value="1 slot Ige">1 slot Ige</option>
             <option value="Cow Leg">Cow Leg</option>
             <option value="Half Cow Tail">Half Cow Tail</option>
