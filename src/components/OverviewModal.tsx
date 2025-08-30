@@ -12,34 +12,41 @@ const OverviewModal: React.FC<Props> = ({ order, onClose }) => {
   const itemsArray: OrderItem[] =
     typeof order.items === "string" ? JSON.parse(order.items) : order.items;
 
+  const accountDetails = "0043750696 (Access Bank) - TMC";
+
   // Prepare summary for copy/WhatsApp
-  const orderSummary = `
-Order ID: ${order.id}
-Name: ${order.name}
-Phone: ${order.phone}
-Mode of Collection: ${order.deliveryMethod}
-${
-  order.deliveryMethod === "delivery"
-    ? `Delivery Address: ${order.address}`
-    : ""
-}
-Items:
-${itemsArray.map((item) => `- ${item.type} x${item.quantity}`).join("\n")}
-  `.trim();
+  //   const orderSummary = `
+  // Order ID: ${order.id}
+  // Name: ${order.name}
+  // Phone: ${order.phone}
+  // Mode of Collection: ${order.deliveryMethod}
+  // ${
+  //   order.deliveryMethod === "delivery"
+  //     ? `Delivery Address: ${order.address}`
+  //     : ""
+  // }
+  // Items:
+  // ${itemsArray.map((item) => `- ${item.type} x${item.quantity}`).join("\n")}
+  //   `.trim();
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(orderSummary);
-    alert("Order details copied!");
+    navigator.clipboard.writeText(accountDetails);
+    alert("Account details copied!");
   };
 
-  const whatsappLink =
-    "https://chat.whatsapp.com/DBAqosMRJOl3AAo6sHioXE?mode=ems_copy_t";
+  const phoneNumber = "2348039436510"; // your number
+  const message =
+    "Hello Edible, I made an order. Attached is my payment receipt.";
+  const whatsappLink = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(
+    message
+  )}`;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-xl shadow-lg w-full max-w-md mx-auto overflow-auto max-h-[90vh]">
         <div className="p-6 flex flex-col space-y-4">
-          <h2 className="text-2xl font-bold text-center">Order Overview</h2>
+          <h2 className="text-2xl font-bold text-center ">Order Overview</h2>
+          <h4 className="text-xl font-medium text-center">{accountDetails}</h4>
 
           <div className="text-gray-700 space-y-2 text-sm sm:text-base">
             <p>
@@ -76,7 +83,7 @@ ${itemsArray.map((item) => `- ${item.type} x${item.quantity}`).join("\n")}
               onClick={handleCopy}
               className="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700"
             >
-              Copy Order Details
+              Copy Account Details
             </button>
             <a
               href={whatsappLink}
