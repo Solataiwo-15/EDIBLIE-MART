@@ -37,7 +37,7 @@ const OverviewModal: React.FC<Props> = ({ order, onClose }) => {
   const phoneNumber = "2348039436510"; // your number
   const message = `Hello Edible, 
     I just made an order. 
-    • Order ID: ${order.id} 
+    • ${orderSummary} 
     • Here's my payment receipt.`;
 
   const whatsappLink = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(
