@@ -15,19 +15,19 @@ const OverviewModal: React.FC<Props> = ({ order, onClose }) => {
   const accountDetails = "0043750696 (Access Bank) - TMC";
 
   // Prepare summary for copy/WhatsApp
-  //   const orderSummary = `
-  // Order ID: ${order.id}
-  // Name: ${order.name}
-  // Phone: ${order.phone}
-  // Mode of Collection: ${order.deliveryMethod}
-  // ${
-  //   order.deliveryMethod === "delivery"
-  //     ? `Delivery Address: ${order.address}`
-  //     : ""
-  // }
-  // Items:
-  // ${itemsArray.map((item) => `- ${item.type} x${item.quantity}`).join("\n")}
-  //   `.trim();
+  const orderSummary = `
+  Order ID: ${order.id}
+  Name: ${order.name}
+  Phone: ${order.phone}
+  Mode of Collection: ${order.deliveryMethod}
+  ${
+    order.deliveryMethod === "delivery"
+      ? `Delivery Address: ${order.address}`
+      : ""
+  }
+  Items:
+  ${itemsArray.map((item) => `- ${item.type} x${item.quantity}`).join("\n")}
+    `.trim();
 
   const handleCopy = () => {
     navigator.clipboard.writeText(accountDetails);
@@ -35,8 +35,11 @@ const OverviewModal: React.FC<Props> = ({ order, onClose }) => {
   };
 
   const phoneNumber = "2348039436510"; // your number
-  const message =
-    "Hello Edible, I made an order. Attached is my payment receipt.";
+  const message = `Hello Edible, 
+    I just made an order. 
+    • Order ID: ${order.id} 
+    • Here's my payment receipt.`;
+
   const whatsappLink = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(
     message
   )}`;
