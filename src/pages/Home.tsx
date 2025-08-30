@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import "../index.css";
 import { supabase } from "../utils/supabaseClient";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import CustomerForm from "../components/CustomerForm";
 import OrderForm from "../components/OrderForm";
@@ -36,7 +38,7 @@ const Home: React.FC = () => {
   const [isOverviewOpen, setIsOverviewOpen] = useState(false);
   const [submittedOrder, setSubmittedOrder] = useState<OrderData | null>(null);
   const [isSubmitEnabled, setIsSubmitEnabled] = useState(true);
-  const [loading, setLoading] = useState(false); // NEW loading state
+  const [loading, setLoading] = useState(false); // loading state
 
   useEffect(() => {
     const fetchSubmitStatus = async () => {
@@ -81,8 +83,8 @@ const Home: React.FC = () => {
         .select(); // return inserted row
 
       if (error) {
-        console.error("Error saving order:", error.message);
-        alert("Something went wrong while saving the order.");
+        console.error("Error submitting order:", error.message);
+        toast.error("❌ Something went wrong while saving the order.");
         return;
       }
 
@@ -95,6 +97,9 @@ const Home: React.FC = () => {
       });
 
       setIsOverviewOpen(true);
+
+      // success toast
+      toast.success("Order submitted successfully!");
 
       // Reset form
       setFormData({
@@ -120,6 +125,7 @@ const Home: React.FC = () => {
         cowLegs="4 available(FCFS) Price ranges between ₦7,000 - ₦10,000"
         cowTailPrice="₦30,000 - ₦40,000"
       />
+
       {/* Form */}
       <form
         onSubmit={handleSubmit}
