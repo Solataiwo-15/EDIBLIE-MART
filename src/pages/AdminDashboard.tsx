@@ -9,7 +9,6 @@ interface Props {
 
 const AdminDashboard: React.FC<Props> = ({ setIsAdminLoggedIn }) => {
   const navigate = useNavigate();
-  //   const [activeTab, setActiveTab] = useState<"orders" | "customers">("orders");
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [isSubmitEnabled, setIsSubmitEnabled] = useState(true);
@@ -66,13 +65,11 @@ const AdminDashboard: React.FC<Props> = ({ setIsAdminLoggedIn }) => {
 
     const { error: updateError } = await supabase
       .from("settings")
-      .update({ submit_enabled: !isSubmitEnabled })
-      .eq("id", 1); // assuming you only have one row with id = 1
+      .update({ submit_enabled: newValue })
+      .eq("id", 1);
 
     if (updateError) {
       console.error("Error updating setting:", updateError);
-    } else {
-      setIsSubmitEnabled(!isSubmitEnabled);
     }
   };
 
@@ -80,6 +77,12 @@ const AdminDashboard: React.FC<Props> = ({ setIsAdminLoggedIn }) => {
     fetchOrders();
     fetchSubmitSetting();
   }, []);
+
+  // Use total_price from Supabase
+  const grandTotal = orders.reduce(
+    (sum, order) => sum + (order.total_price || 0),
+    0
+  );
 
   const exportOrdersAsPDF = () => {
     // @ts-expect-error using jsPDF from window because TypeScript doesn't know about it
@@ -94,8 +97,9 @@ const AdminDashboard: React.FC<Props> = ({ setIsAdminLoggedIn }) => {
         "Mode of Collection",
         "Address",
         "Items",
-        "paid",
-        "status",
+        "Total Price",
+        "Payment Status",
+        "Order Status",
       ],
     ];
 
@@ -106,21 +110,30 @@ const AdminDashboard: React.FC<Props> = ({ setIsAdminLoggedIn }) => {
       order.deliveryMethod,
       order.address || "-",
       order.items.map((item) => `${item.type} x${item.quantity}`).join(", "),
+      `${(order.total_price || 0).toLocaleString()}`,
     ]);
+
+    doc.text("Orders Report", 14, 15);
+    doc.text(`Total Orders: ${orders.length}`, 14, 25);
 
     doc.autoTable({
       head: headers,
       body: rows,
-      startY: 20,
+      startY: 35,
       theme: "grid",
+      foot: [
+        [
+          { content: "Grand Total", colSpan: 6, styles: { halign: "right" } },
+          `${grandTotal.toLocaleString()}`,
+        ],
+      ],
     });
 
-    doc.text("Orders Report", 14, 15);
     doc.save("orders.pdf");
   };
 
   return (
-    <div className="min-h-screen flex flex-col ">
+    <div className="min-h-screen flex flex-col">
       {/* Top Navbar */}
       <header className="mt-10 left-0 w-full flex justify-between items-center px-4 py-2">
         <h1 className="text-xl font-bold">Admin Dashboard</h1>
@@ -131,23 +144,6 @@ const AdminDashboard: React.FC<Props> = ({ setIsAdminLoggedIn }) => {
           Logout
         </button>
       </header>
-
-      {/* Tabs
-      <nav className="flex justify-center gap-8 mt-6 border-b pb-3">
-        {["orders", "customers"].map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab as "orders" | "customers")}
-            className={`capitalize px-6 py-2 rounded-md text-lg font-medium ${
-              activeTab === tab
-                ? "bg-blue-500 text-white"
-                : "bg-gray-200 hover:bg-gray-300"
-            }`}
-          >
-            {tab}
-          </button>
-        ))}
-      </nav> */}
 
       {/* Page Content */}
       <main className="flex-1 pt-5 px-6">
@@ -172,7 +168,12 @@ const AdminDashboard: React.FC<Props> = ({ setIsAdminLoggedIn }) => {
             </button>
           </div>
 
-          {/* Title */}
+          {/* Total Orders */}
+          <h2 className="text-left text-lg font-semibold mb-4">
+            Total Orders: {orders.length}
+          </h2>
+
+          {/* Orders Table */}
           <h2 className="text-left text-xl font-semibold mb-6">Orders</h2>
           {loading ? (
             <p className="text-left">Loading orders...</p>
@@ -189,6 +190,7 @@ const AdminDashboard: React.FC<Props> = ({ setIsAdminLoggedIn }) => {
                     <th className="py-2 px-4 text-left">Mode of Collection</th>
                     <th className="py-2 px-4 text-left">Address</th>
                     <th className="py-2 px-4 text-left">Items</th>
+                    <th className="py-2 px-4 text-right">Total Price</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -204,9 +206,22 @@ const AdminDashboard: React.FC<Props> = ({ setIsAdminLoggedIn }) => {
                           .map((item) => `${item.type} x${item.quantity}`)
                           .join(", ")}
                       </td>
+                      <td className="py-2 px-4 text-right whitespace-nowrap">
+                        ₦{(order.total_price || 0).toLocaleString()}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
+                <tfoot>
+                  <tr className="bg-gray-100 font-semibold">
+                    <td colSpan={6} className="py-2 px-4 text-right">
+                      Grand Total:
+                    </td>
+                    <td className="py-2 px-4 text-right whitespace-nowrap">
+                      ₦{grandTotal.toLocaleString()}
+                    </td>
+                  </tr>
+                </tfoot>
               </table>
             </div>
           )}

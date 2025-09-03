@@ -14,6 +14,11 @@ const OverviewModal: React.FC<Props> = ({ order, onClose }) => {
 
   const accountDetails = "0043750696 (Access Bank) - TMC";
 
+  // Calculate total price (skip items without price)
+  const totalPrice = itemsArray.reduce((sum, item) => {
+    return item.price ? sum + item.price * item.quantity : sum;
+  }, 0);
+
   // Prepare summary for copy/WhatsApp
   const orderSummary = `
   Order ID: ${order.id}
@@ -27,6 +32,7 @@ const OverviewModal: React.FC<Props> = ({ order, onClose }) => {
   }
   Items:
   ${itemsArray.map((item) => `- ${item.type} x${item.quantity}`).join("\n")}
+  Total: ${totalPrice.toLocaleString()}
     `.trim();
 
   const handleCopy = () => {
@@ -35,8 +41,7 @@ const OverviewModal: React.FC<Props> = ({ order, onClose }) => {
   };
 
   const phoneNumber = "2348039436510"; // your number
-  const message = `Hello Edible, 
-    I just made an order. 
+  const message = `Hello Edible, I just made an order. 
     • ${orderSummary} 
     • Here's my payment receipt.`;
 
@@ -48,7 +53,7 @@ const OverviewModal: React.FC<Props> = ({ order, onClose }) => {
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-xl shadow-lg w-full max-w-md mx-auto overflow-auto max-h-[90vh]">
         <div className="p-6 flex flex-col space-y-4">
-          <h2 className="text-2xl font-bold text-center ">Order Overview</h2>
+          <h2 className="text-2xl font-bold text-center">Order Overview</h2>
           <h4 className="text-xl font-medium text-center">{accountDetails}</h4>
 
           <div className="text-gray-700 space-y-2 text-sm sm:text-base">
@@ -74,11 +79,17 @@ const OverviewModal: React.FC<Props> = ({ order, onClose }) => {
               <ul className="list-disc list-inside ml-4">
                 {itemsArray.map((item, idx) => (
                   <li key={idx}>
-                    {item.type} x{item.quantity}
+                    {item.type} x{item.quantity}{" "}
+                    {item.price
+                      ? `(₦${(item.price * item.quantity).toLocaleString()})`
+                      : ""}
                   </li>
                 ))}
               </ul>
             </div>
+            <p className="font-bold mt-2">
+              Total: ₦{totalPrice.toLocaleString()}
+            </p>
           </div>
 
           <div className="flex flex-col sm:flex-row sm:space-x-2 space-y-2 sm:space-y-0 mt-4">

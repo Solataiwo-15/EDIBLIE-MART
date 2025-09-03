@@ -1,6 +1,24 @@
 import React from "react";
 import type { OrderData, OrderItem } from "../pages/Home";
 
+// price mapping (null means price varies / excluded from total)
+const ITEM_PRICES: Record<string, number | null> = {
+  "Half slot Inu eran": 5000,
+  "Half slot Beef": 4500,
+  "Half slot Ike": 4000,
+  "Half slot Ige": 4200,
+  "Half slot Agemawo": 4800,
+  "1 slot Beef": 9000,
+  "1 slot Agemawo": 9600,
+  "1 slot Agemawo + inu eran": 10000,
+  "1 slot Ige": 8800,
+  "Cow Leg": null,
+  "Half Cow Tail": null,
+  "Full Cow Tail": null,
+  "Half Cow Head": null,
+  "Full Cow Head": null,
+};
+
 interface Props {
   formData: OrderData;
   setFormData: React.Dispatch<React.SetStateAction<OrderData>>;
@@ -14,13 +32,19 @@ const OrderForm: React.FC<Props> = ({ formData, setFormData }) => {
   ) => {
     const newItems = [...formData.items];
     newItems[index] = { ...newItems[index], [field]: value };
+
+    // auto-attach price when type changes
+    if (field === "type" && typeof value === "string") {
+      newItems[index].price = ITEM_PRICES[value] ?? null;
+    }
+
     setFormData({ ...formData, items: newItems });
   };
 
   const addItem = () => {
     setFormData({
       ...formData,
-      items: [...formData.items, { type: "", quantity: 1 }],
+      items: [...formData.items, { type: "", quantity: 1, price: null }],
     });
   };
 
@@ -42,6 +66,7 @@ const OrderForm: React.FC<Props> = ({ formData, setFormData }) => {
           key={index}
           className="flex flex-col sm:flex-row sm:items-center gap-3 mb-3"
         >
+          {/* Item type */}
           <select
             value={item.type}
             onChange={(e) => handleItemChange(index, "type", e.target.value)}
@@ -49,24 +74,14 @@ const OrderForm: React.FC<Props> = ({ formData, setFormData }) => {
             className="flex-1 border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-green-400 focus:outline-none"
           >
             <option value="">Select Item</option>
-            <option value="Half slot Inu eran">Half slot Inu eran</option>
-            <option value="Half slot Beef">Half slot Beef</option>
-            <option value="Half slot Ike">Half slot Ike</option>
-            <option value="Half slot Ige">Half slot Ige</option>
-            <option value="Half slot Agemawo">Half slot Agemawo</option>
-            <option value="1 slot Beef">1 slot Beef</option>
-            <option value="1 slot Agemawo">1 slot Agemawo</option>
-            <option value="1 slot Agemawo + inu eran">
-              1 slot Agemawo + Inu
-            </option>
-            <option value="1 slot Ige">1 slot Ige</option>
-            <option value="Cow Leg">Cow Leg</option>
-            <option value="Half Cow Tail">Half Cow Tail</option>
-            <option value="Full Cow Tail">Full Cow Tail</option>
-            <option value="Half Cow Head">Half Cow Head</option>
-            <option value="Full Cow Head">Full Cow Head</option>
+            {Object.keys(ITEM_PRICES).map((key) => (
+              <option key={key} value={key}>
+                {key}
+              </option>
+            ))}
           </select>
 
+          {/* Quantity */}
           <input
             type="number"
             min={1}
@@ -78,6 +93,16 @@ const OrderForm: React.FC<Props> = ({ formData, setFormData }) => {
             required
           />
 
+          {/* Price display */}
+          <span className="text-gray-700 font-medium min-w-[100px]">
+            {item.type
+              ? ITEM_PRICES[item.type] !== null
+                ? `₦${ITEM_PRICES[item.type]}`
+                : "Price at venue"
+              : "-"}
+          </span>
+
+          {/* Remove button */}
           {formData.items.length > 1 && (
             <button
               type="button"
@@ -90,6 +115,7 @@ const OrderForm: React.FC<Props> = ({ formData, setFormData }) => {
         </div>
       ))}
 
+      {/* Add Item button */}
       <button
         type="button"
         onClick={addItem}

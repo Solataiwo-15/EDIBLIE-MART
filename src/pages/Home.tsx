@@ -13,6 +13,7 @@ import OrderInfo from "../components/OrderInfo";
 export type OrderItem = {
   type: string;
   quantity: number;
+  price: number | null; // added
 };
 
 export type OrderData = {
@@ -23,6 +24,7 @@ export type OrderData = {
   notes?: string;
   id?: string; // UUID from Supabase
   items: OrderItem[];
+  total_price?: number; // added
 };
 
 const Home: React.FC = () => {
@@ -32,7 +34,7 @@ const Home: React.FC = () => {
     deliveryMethod: "pickup",
     address: "",
     notes: "",
-    items: [{ type: "", quantity: 1 }],
+    items: [{ type: "", quantity: 1, price: null }],
   });
 
   const [isOverviewOpen, setIsOverviewOpen] = useState(false);
@@ -71,10 +73,17 @@ const Home: React.FC = () => {
     setLoading(true); // start loading
 
     try {
+      // Calculate total_price
+      const totalPrice = formData.items.reduce((sum, item) => {
+        const price = item.price ?? 0;
+        return sum + price * item.quantity;
+      }, 0);
+
       // Save items as JSON for Postgres
       const orderToSave = {
         ...formData,
         items: JSON.stringify(formData.items),
+        total_price: totalPrice, // ✅ added
       };
 
       const { data, error } = await supabase
@@ -94,6 +103,7 @@ const Home: React.FC = () => {
         ...formData,
         id: insertedOrder?.id,
         items: formData.items, // keep as object locally
+        total_price: totalPrice, // ✅ keep locally
       });
 
       setIsOverviewOpen(true);
@@ -108,7 +118,7 @@ const Home: React.FC = () => {
         deliveryMethod: "pickup",
         address: "",
         notes: "",
-        items: [{ type: "", quantity: 1 }],
+        items: [{ type: "", quantity: 1, price: null }],
       });
     } finally {
       setLoading(false); // stop loading

@@ -1,9 +1,11 @@
 // src/types.ts
 
-export type OrderItem = {
+export interface OrderItem {
   type: string;
   quantity: number;
-};
+  price: number | null; // added
+}
+
 
 export type Order = {
   id: number;
@@ -15,4 +17,5 @@ export type Order = {
   notes?: string;
   created_at?: string;
   items: OrderItem[];
+  total_price: number; 
 };
