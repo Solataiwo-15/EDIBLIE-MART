@@ -15,7 +15,7 @@ const Header: React.FC = () => {
         </h1>
 
         {/* Desktop Links */}
-        <ul className="hidden sm:flex space-x-4 flex gap-6 m-0 p-0 list-none ">
+        <ul className="hidden sm:flex space-x-4 gap-6 m-0 p-0 list-none ">
           <li>
             <NavLink
               to="/"
