@@ -31,7 +31,7 @@ const Header: React.FC = () => {
               className="py-2 px-3 rounded hover:bg-gray-100 transition"
             >
               {" "}
-              Admin
+              Admin Dashboard
             </NavLink>
           </li>
         </ul>
@@ -69,7 +69,7 @@ const Header: React.FC = () => {
                 className="text-gray-700 hover:text-gray-900 no-underline font-semibold text-base"
                 onClick={() => setMenuOpen(false)}
               >
-                Admin
+                Admin Dashboard
               </NavLink>
             </li>
           </ul>
