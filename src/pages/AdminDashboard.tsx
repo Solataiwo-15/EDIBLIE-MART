@@ -23,7 +23,8 @@ const AdminDashboard: React.FC<Props> = ({ setIsAdminLoggedIn }) => {
     setLoading(true);
     const { data, error } = await supabase
       .from<"orders", Order>("orders")
-      .select("*");
+      .select("*")
+      .order("id", { ascending: true });
 
     if (error) {
       console.error("Error fetching orders:", error);
