@@ -77,48 +77,6 @@ const AdminDashboard: React.FC<Props> = ({ setIsAdminLoggedIn }) => {
   useEffect(() => {
     fetchOrders();
     fetchSubmitSetting();
-
-    // subscribe to real-time changes on orders
-    const channel = supabase
-      .channel("orders-changes")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "orders" },
-        (payload) => {
-          console.log("Change received:", payload);
-
-          if (payload.eventType === "INSERT") {
-            const newOrder = payload.new as Order;
-            setOrders((prev) => [
-              ...prev,
-              {
-                ...newOrder,
-                items:
-                  typeof newOrder.items === "string"
-                    ? JSON.parse(newOrder.items)
-                    : newOrder.items,
-              },
-            ]);
-          }
-
-          if (payload.eventType === "UPDATE") {
-            const updatedOrder = payload.new as Order;
-            setOrders((prev) =>
-              prev.map((o) => (o.id === updatedOrder.id ? updatedOrder : o))
-            );
-          }
-
-          if (payload.eventType === "DELETE") {
-            const deletedOrder = payload.old as Order;
-            setOrders((prev) => prev.filter((o) => o.id !== deletedOrder.id));
-          }
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
   }, []);
 
   // Use total_price from Supabase
@@ -211,9 +169,46 @@ const AdminDashboard: React.FC<Props> = ({ setIsAdminLoggedIn }) => {
             </button>
           </div>
 
-          {/* Total Orders */}
-          <h2 className="text-left text-lg font-semibold mb-4">
+          {/* Total Orders + Refresh */}
+          <h2 className="text-left text-lg font-semibold mb-4 flex items-center gap-10">
             Total Orders: {orders.length}
+            <button
+              onClick={fetchOrders}
+              disabled={loading}
+              className={`flex items-center gap-2 text-sm px-3 py-1 rounded ${
+                loading
+                  ? "bg-gray-300 text-gray-600 cursor-not-allowed"
+                  : "bg-gray-200 hover:bg-gray-300"
+              }`}
+            >
+              {loading ? (
+                <>
+                  <svg
+                    className="animate-spin h-4 w-4 text-gray-600"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                    />
+                  </svg>
+                  {/* Refreshing... */}
+                </>
+              ) : (
+                "Refresh"
+              )}
+            </button>
           </h2>
 
           {/* Orders Table */}
