@@ -77,6 +77,48 @@ const AdminDashboard: React.FC<Props> = ({ setIsAdminLoggedIn }) => {
   useEffect(() => {
     fetchOrders();
     fetchSubmitSetting();
+
+    // subscribe to real-time changes on orders
+    const channel = supabase
+      .channel("orders-changes")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "orders" },
+        (payload) => {
+          console.log("Change received:", payload);
+
+          if (payload.eventType === "INSERT") {
+            const newOrder = payload.new as Order;
+            setOrders((prev) => [
+              ...prev,
+              {
+                ...newOrder,
+                items:
+                  typeof newOrder.items === "string"
+                    ? JSON.parse(newOrder.items)
+                    : newOrder.items,
+              },
+            ]);
+          }
+
+          if (payload.eventType === "UPDATE") {
+            const updatedOrder = payload.new as Order;
+            setOrders((prev) =>
+              prev.map((o) => (o.id === updatedOrder.id ? updatedOrder : o))
+            );
+          }
+
+          if (payload.eventType === "DELETE") {
+            const deletedOrder = payload.old as Order;
+            setOrders((prev) => prev.filter((o) => o.id !== deletedOrder.id));
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   // Use total_price from Supabase
