@@ -32,7 +32,7 @@ const OverviewModal: React.FC<Props> = ({ order, onClose }) => {
   }
   Items:
   ${itemsArray.map((item) => `- ${item.type} x${item.quantity}`).join("\n")}
-  Total: ${totalPrice.toLocaleString()}
+  Total: ₦${totalPrice.toLocaleString()}
     `.trim();
 
   const handleCopy = () => {
@@ -40,7 +40,7 @@ const OverviewModal: React.FC<Props> = ({ order, onClose }) => {
     alert("Account details copied!");
   };
 
-  const phoneNumber = "2348039436510"; // your number
+  const phoneNumber = "2347063003070"; // your number
   const message = `Hello Edible, I just made an order. 
     • ${orderSummary} 
     • Here's my payment receipt.`;
