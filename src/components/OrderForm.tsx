@@ -1,49 +1,42 @@
 import React from "react";
 import type { OrderData, OrderItem } from "../pages/Home";
 
-// price mapping (null means price varies / excluded from total)
-const ITEM_PRICES: Record<string, number | null> = {
-  "Half slot Inu eran": 3750,
-  "Half slot Beef": 3750,
-  "Half slot Abonu": 3750,
-  "Half slot Ijase": 3750,
-  "Half slot Ike": 3750,
-  "Half slot Ige": 3750,
-  "Half slot Agemawo": 3750,
-  "1 slot Beef": 7500,
-  "1 slot Abonu": 7500,
-  "1 slot Ijase": 7500,
-  "1 slot Agemawo": 7500,
-  "1 slot Agemawo + inu eran": 7500,
-  "1 slot Ijase + inu eran": 7500,
-  "1 slot Abonu + inu eran": 7500,
-  "1 slot Ige": 7500,
-  "Cow Leg": null,
-  "Half Cow Tail": null,
-  "Full Cow Tail": null,
-  "Half Cow Head": null,
-  "Full Cow Head": null,
+export type Product = {
+  name: string;
+  price: number | null;
+  effective_quantity_available: number;
 };
 
 interface Props {
   formData: OrderData;
   setFormData: React.Dispatch<React.SetStateAction<OrderData>>;
+  products: Product[];
+  loading: boolean;
 }
 
-const OrderForm: React.FC<Props> = ({ formData, setFormData }) => {
+const OrderForm: React.FC<Props> = ({
+  formData,
+  setFormData,
+  products,
+  loading,
+}) => {
   const handleItemChange = (
     index: number,
     field: keyof OrderItem,
     value: string | number
   ) => {
     const newItems = [...formData.items];
-    newItems[index] = { ...newItems[index], [field]: value };
+    const currentItem = { ...newItems[index] };
 
-    // auto-attach price when type changes
     if (field === "type" && typeof value === "string") {
-      newItems[index].price = ITEM_PRICES[value] ?? null;
+      const selectedProduct = products.find((p) => p.name === value);
+      currentItem.type = value;
+      currentItem.price = selectedProduct ? selectedProduct.price : null;
+    } else if (field === "quantity") {
+      currentItem.quantity = Number(value);
     }
 
+    newItems[index] = currentItem;
     setFormData({ ...formData, items: newItems });
   };
 
@@ -55,7 +48,7 @@ const OrderForm: React.FC<Props> = ({ formData, setFormData }) => {
   };
 
   const removeItem = (index: number) => {
-    if (formData.items.length === 1) return; // always keep at least one row
+    if (formData.items.length === 1) return;
     const newItems = [...formData.items];
     newItems.splice(index, 1);
     setFormData({ ...formData, items: newItems });
@@ -66,69 +59,79 @@ const OrderForm: React.FC<Props> = ({ formData, setFormData }) => {
       <h2 className="text-xl font-semibold mb-4 text-gray-800">
         Order Details
       </h2>
-
-      {formData.items.map((item, index) => (
-        <div
-          key={index}
-          className="flex flex-col sm:flex-row sm:items-center gap-3 mb-3"
-        >
-          {/* Item type */}
-          <select
-            value={item.type}
-            onChange={(e) => handleItemChange(index, "type", e.target.value)}
-            required
-            className="flex-1 border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-green-400 focus:outline-none"
-          >
-            <option value="">Select Item</option>
-            {Object.keys(ITEM_PRICES).map((key) => (
-              <option key={key} value={key}>
-                {key}
-              </option>
-            ))}
-          </select>
-
-          {/* Quantity */}
-          <input
-            type="number"
-            min={1}
-            value={item.quantity}
-            onChange={(e) =>
-              handleItemChange(index, "quantity", parseInt(e.target.value))
-            }
-            className="w-full sm:w-24 border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-green-400 focus:outline-none"
-            required
-          />
-
-          {/* Price display */}
-          <span className="text-gray-700 font-medium min-w-[100px]">
-            {item.type
-              ? ITEM_PRICES[item.type] !== null
-                ? `₦${ITEM_PRICES[item.type]}`
-                : "Price at venue"
-              : "-"}
-          </span>
-
-          {/* Remove button */}
-          {formData.items.length > 1 && (
-            <button
-              type="button"
-              onClick={() => removeItem(index)}
-              className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition"
+      {loading ? (
+        <p>Loading items...</p>
+      ) : (
+        <>
+          {formData.items.map((item, index) => (
+            <div
+              key={index}
+              className="flex flex-col sm:flex-row sm:items-center gap-3 mb-3"
             >
-              Remove
-            </button>
-          )}
-        </div>
-      ))}
-
-      {/* Add Item button */}
-      <button
-        type="button"
-        onClick={addItem}
-        className="mt-2 bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700 transition"
-      >
-        + Add Item
-      </button>
+              <select
+                value={item.type}
+                onChange={(e) =>
+                  handleItemChange(index, "type", e.target.value)
+                }
+                required
+                className="flex-1 border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-green-400 focus:outline-none"
+              >
+                <option value="">Select Item</option>
+                {products.map((product) => {
+                  const isSoldOut = product.effective_quantity_available < 1;
+                  const isCurrentlySelected = item.type === product.name;
+                  return (
+                    <option
+                      key={product.name}
+                      value={product.name}
+                      disabled={isSoldOut && !isCurrentlySelected}
+                      className={isSoldOut ? "text-gray-400" : ""}
+                    >
+                      {product.name}{" "}
+                      {isSoldOut
+                        ? "(Sold Out)"
+                        : `(${product.effective_quantity_available} left)`}
+                    </option>
+                  );
+                })}
+              </select>
+              <input
+                type="number"
+                min={1}
+                value={item.quantity}
+                onChange={(e) =>
+                  handleItemChange(index, "quantity", parseInt(e.target.value))
+                }
+                className="w-full sm:w-24 border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-green-400 focus:outline-none"
+                required
+              />
+              <span className="text-gray-700 font-medium min-w-[100px]">
+                {item.price !== null && item.type
+                  ? `₦${item.price}`
+                  : item.type
+                  ? "Price at venue"
+                  : "-"}
+              </span>
+              {formData.items.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() => removeItem(index)}
+                  className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition"
+                >
+                  Remove
+                </button>
+              )}
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={addItem}
+            className="mt-2 bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700 transition"
+          >
+            + Add Item
+          </button>
+        </>
+      )}
     </section>
   );
 };

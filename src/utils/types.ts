@@ -1,5 +1,3 @@
-// src/types.ts
-
 export interface OrderItem {
   type: string;
   quantity: number;

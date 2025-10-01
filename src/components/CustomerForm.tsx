@@ -1,4 +1,3 @@
-// src/components/CustomerForm.tsx
 import React from "react";
 import type { OrderData } from "../pages/Home";
 
@@ -9,7 +8,7 @@ interface Props {
 
 const CustomerForm: React.FC<Props> = ({ formData, handleChange }) => {
   return (
-    <section className="bg-white p-6 rounded-xl shadow-md">
+    <section className="bg-white p-4 sm:p-6 rounded-xl shadow">
       <h2 className="text-xl font-semibold mb-4 text-gray-800">
         Customer Information
       </h2>

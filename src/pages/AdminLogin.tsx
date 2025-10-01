@@ -1,4 +1,3 @@
-// src/pages/AdminLogin.tsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -27,7 +26,7 @@ const AdminLogin: React.FC<Props> = ({ setIsAdminLoggedIn }) => {
         setError("Invalid username or password");
       }
       setLoading(false);
-    }, 1500); // simulate request delay
+    }, 1500);
   };
 
   return (

@@ -1,4 +1,3 @@
-// src/components/DeliveryOption.tsx
 import React from "react";
 import type { OrderData } from "../pages/Home";
 

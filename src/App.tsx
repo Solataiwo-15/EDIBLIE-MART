@@ -16,7 +16,6 @@ const App: React.FC = () => {
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
 
   useEffect(() => {
-    // Initialize login state from localStorage
     const stored = localStorage.getItem("adminLoggedIn");
     setIsAdminLoggedIn(stored === "true");
   }, []);
@@ -30,13 +29,11 @@ const App: React.FC = () => {
           <Routes>
             <Route path="/" element={<Home />} />
 
-            {/* Admin login */}
             <Route
               path="/admin-login"
               element={<AdminLogin setIsAdminLoggedIn={setIsAdminLoggedIn} />}
             />
 
-            {/* Admin dashboard - protected */}
             <Route
               path="/admin/dashboard"
               element={
@@ -48,7 +45,6 @@ const App: React.FC = () => {
               }
             />
 
-            {/* Fallback for unknown routes */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </div>

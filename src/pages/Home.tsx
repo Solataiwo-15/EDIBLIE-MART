@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react"; // Add useCallback
 import "../index.css";
 import { supabase } from "../utils/supabaseClient";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import CustomerForm from "../components/CustomerForm";
-import OrderForm from "../components/OrderForm";
+import OrderForm, { type Product } from "../components/OrderForm";
 import DeliveryOption from "../components/DeliveryOption";
 import OverviewModal from "../components/OverviewModal";
 import OrderInfo from "../components/OrderInfo";
@@ -13,7 +13,7 @@ import OrderInfo from "../components/OrderInfo";
 export type OrderItem = {
   type: string;
   quantity: number;
-  price: number | null; // added
+  price: number | null;
 };
 
 export type OrderData = {
@@ -22,9 +22,9 @@ export type OrderData = {
   deliveryMethod: "pickup" | "delivery";
   address?: string;
   notes?: string;
-  id?: string; // UUID from Supabase
+  id?: string;
   items: OrderItem[];
-  total_price?: number; // added
+  total_price?: number;
 };
 
 const Home: React.FC = () => {
@@ -40,21 +40,36 @@ const Home: React.FC = () => {
   const [isOverviewOpen, setIsOverviewOpen] = useState(false);
   const [submittedOrder, setSubmittedOrder] = useState<OrderData | null>(null);
   const [isSubmitEnabled, setIsSubmitEnabled] = useState(true);
-  const [loading, setLoading] = useState(false); // loading state
+
+  const [products, setProducts] = useState<Product[]>([]);
+  const [productsLoading, setProductsLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+
+  const fetchProducts = useCallback(async () => {
+    setProductsLoading(true);
+    const { data, error } = await supabase.rpc("get_sellable_products");
+    if (error) {
+      console.error("Error fetching products:", error);
+      toast.error("Could not load product list.");
+    } else {
+      setProducts(data);
+    }
+    setProductsLoading(false);
+  }, []);
 
   useEffect(() => {
+    fetchProducts();
+
     const fetchSubmitStatus = async () => {
       const { data, error } = await supabase
         .from("settings")
         .select("submit_enabled")
         .limit(1)
         .single();
-
       if (!error && data) setIsSubmitEnabled(data.submit_enabled);
     };
-
     fetchSubmitStatus();
-  }, []);
+  }, [fetchProducts]);
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -70,48 +85,72 @@ const Home: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true); // start loading
+    setLoading(true);
+
+    if (formData.items.some((item) => !item.type)) {
+      toast.error("❌ Please select a product for all items.");
+      setLoading(false);
+      return;
+    }
 
     try {
-      // Calculate total_price
+      for (const item of formData.items) {
+        const productInfo = products.find((p) => p.name === item.type);
+        if (
+          !productInfo ||
+          productInfo.effective_quantity_available < item.quantity
+        ) {
+          throw new Error(`Not enough stock for "${item.type}".`);
+        }
+      }
+
       const totalPrice = formData.items.reduce((sum, item) => {
         const price = item.price ?? 0;
         return sum + price * item.quantity;
       }, 0);
 
-      // Save items as JSON for Postgres
       const orderToSave = {
         ...formData,
         items: JSON.stringify(formData.items),
-        total_price: totalPrice, // ✅ added
+        total_price: totalPrice,
       };
 
-      const { data, error } = await supabase
+      const { data: insertedOrder, error: insertError } = await supabase
         .from("orders")
         .insert([orderToSave])
-        .select(); // return inserted row
+        .select()
+        .single();
 
-      if (error) {
-        console.error("Error submitting order:", error.message);
-        toast.error("❌ Something went wrong while saving the order.");
-        return;
+      if (insertError) throw new Error(insertError.message);
+
+      for (const item of formData.items) {
+        const { data: responseMessage, error: rpcError } = await supabase.rpc(
+          "process_order_decrement",
+          {
+            p_name: item.type,
+            order_quantity: item.quantity,
+          }
+        );
+
+        if (rpcError || responseMessage?.includes("Failure")) {
+          toast.error(
+            `CRITICAL ERROR: Order saved but failed to update inventory for ${item.type}. Please contact support.`
+          );
+        }
       }
 
-      const insertedOrder = data?.[0];
+      await fetchProducts();
 
       setSubmittedOrder({
         ...formData,
         id: insertedOrder?.id,
-        items: formData.items, // keep as object locally
-        total_price: totalPrice, // ✅ keep locally
+        items: formData.items,
+        total_price: totalPrice,
       });
 
       setIsOverviewOpen(true);
-
-      // success toast
       toast.success("Order submitted successfully!");
 
-      // Reset form
       setFormData({
         name: "",
         phone: "",
@@ -120,8 +159,13 @@ const Home: React.FC = () => {
         notes: "",
         items: [{ type: "", quantity: 1, price: null }],
       });
+    } catch (error) {
+      let errorMessage = "An unexpected error occurred.";
+      if (error instanceof Error) errorMessage = error.message;
+      console.error("Error submitting order:", errorMessage);
+      toast.error(`❌ Order Failed: ${errorMessage}`);
     } finally {
-      setLoading(false); // stop loading
+      setLoading(false);
     }
   };
 
@@ -136,13 +180,17 @@ const Home: React.FC = () => {
         cowTailPrice="₦20,000 - ₦30,000"
       />
 
-      {/* Form */}
       <form
         onSubmit={handleSubmit}
         className="space-y-4 sm:space-y-6 bg-white p-4 sm:p-6 rounded-xl shadow"
       >
         <CustomerForm formData={formData} handleChange={handleChange} />
-        <OrderForm formData={formData} setFormData={setFormData} />
+        <OrderForm
+          formData={formData}
+          setFormData={setFormData}
+          products={products}
+          loading={productsLoading}
+        />
         <DeliveryOption formData={formData} handleChange={handleChange} />
 
         <button
@@ -154,37 +202,10 @@ const Home: React.FC = () => {
               : "bg-gray-400 cursor-not-allowed"
           }`}
         >
-          {loading ? (
-            <div className="flex items-center gap-2">
-              <svg
-                className="animate-spin h-5 w-5 text-white"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                ></circle>
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-                ></path>
-              </svg>
-              Submitting...
-            </div>
-          ) : (
-            "Submit Order"
-          )}
+          {loading ? "Submitting..." : "Submit Order"}
         </button>
       </form>
 
-      {/* Overview Modal */}
       {isOverviewOpen && submittedOrder && (
         <OverviewModal
           order={submittedOrder}

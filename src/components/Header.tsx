@@ -8,13 +8,11 @@ const Header: React.FC = () => {
 
   return (
     <header className="w-full fixed top-0 left-0 bg-white z-50 shadow-sm">
-      {/* Top Bar */}
       <nav className="flex items-center justify-between px-6 py-3 bg-white border-b shadow-sm">
         <h1 className="text-xl sm:text-2xl font-bold text-gray-800">
           EDIBLE MART
         </h1>
 
-        {/* Desktop Links */}
         <ul className="hidden sm:flex space-x-4 gap-6 m-0 p-0 list-none ">
           <li>
             <NavLink
@@ -36,7 +34,6 @@ const Header: React.FC = () => {
           </li>
         </ul>
 
-        {/* Mobile Hamburger */}
         <button className="sm:hidden" onClick={() => setMenuOpen(!menuOpen)}>
           {menuOpen ? (
             <X className="w-6 h-6 text-gray-800" />
@@ -46,7 +43,6 @@ const Header: React.FC = () => {
         </button>
       </nav>
 
-      {/* Mobile Dropdown Menu */}
       <div
         className={`sm:hidden overflow-hidden transition-max-h duration-300 ease-in-out ${
           menuOpen ? "max-h-50" : "max-h-0"

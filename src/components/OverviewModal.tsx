@@ -1,4 +1,3 @@
-// src/components/OverviewModal.tsx
 import React from "react";
 import type { OrderData, OrderItem } from "../pages/Home";
 
@@ -8,18 +7,15 @@ interface Props {
 }
 
 const OverviewModal: React.FC<Props> = ({ order, onClose }) => {
-  // Ensure items is always an array
   const itemsArray: OrderItem[] =
     typeof order.items === "string" ? JSON.parse(order.items) : order.items;
 
   const accountDetails = "0043750696 (Access Bank) - TMC";
 
-  // Calculate total price (skip items without price)
   const totalPrice = itemsArray.reduce((sum, item) => {
     return item.price ? sum + item.price * item.quantity : sum;
   }, 0);
 
-  // Prepare summary for copy/WhatsApp
   const orderSummary = `
   Order ID: ${order.id}
   Name: ${order.name}
@@ -40,7 +36,7 @@ const OverviewModal: React.FC<Props> = ({ order, onClose }) => {
     alert("Account details copied!");
   };
 
-  const phoneNumber = "2347063003070"; // your number
+  const phoneNumber = "2347063003070";
   const message = `Hello Edible, I just made an order. 
     • ${orderSummary} 
     • Here's my payment receipt.`;

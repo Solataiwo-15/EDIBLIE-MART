@@ -1,4 +1,3 @@
-// src/components/OrderInfo.tsx
 import React from "react";
 
 type OrderInfoProps = {
@@ -19,7 +18,7 @@ const OrderInfo: React.FC<OrderInfoProps> = ({
   cowTailPrice,
 }) => {
   return (
-    <div className="bg-yellow-100 p-3 sm:p-4 rounded-lg space-y-2 sm:space-y-3 text-left max-w-md sm:max-w-xl mx-auto shadow mb-2">
+    <div className="bg-yellow-100 p-3 sm:p-4 rounded-lg space-y-2 sm:space-y-3 text-left max-w-md sm:max-w-xl mx-auto shadow mb-4">
       <div className="flex items-center gap-2">
         <p className="text-sm sm:text-base">
           <span className="font-semibold">Slaughter Date:</span> {slaughterDate}

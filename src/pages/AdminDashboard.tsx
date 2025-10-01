@@ -79,7 +79,6 @@ const AdminDashboard: React.FC<Props> = ({ setIsAdminLoggedIn }) => {
     fetchSubmitSetting();
   }, []);
 
-  // Use total_price from Supabase
   const grandTotal = orders.reduce(
     (sum, order) => sum + (order.total_price || 0),
     0
@@ -135,7 +134,6 @@ const AdminDashboard: React.FC<Props> = ({ setIsAdminLoggedIn }) => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Top Navbar */}
       <header className="mt-10 left-0 w-full flex justify-between items-center px-4 py-2">
         <h1 className="text-xl font-bold">Admin Dashboard</h1>
         <button
@@ -146,10 +144,8 @@ const AdminDashboard: React.FC<Props> = ({ setIsAdminLoggedIn }) => {
         </button>
       </header>
 
-      {/* Page Content */}
       <main className="flex-1 pt-5 px-6">
         <>
-          {/* Action buttons */}
           <div className="flex justify-center gap-4 mb-4">
             <button
               onClick={exportOrdersAsPDF}
@@ -169,7 +165,6 @@ const AdminDashboard: React.FC<Props> = ({ setIsAdminLoggedIn }) => {
             </button>
           </div>
 
-          {/* Total Orders + Refresh */}
           <h2 className="text-left text-lg font-semibold mb-4 flex items-center gap-10">
             Total Orders: {orders.length}
             <button
@@ -203,7 +198,6 @@ const AdminDashboard: React.FC<Props> = ({ setIsAdminLoggedIn }) => {
                       d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
                     />
                   </svg>
-                  {/* Refreshing... */}
                 </>
               ) : (
                 "Refresh"
@@ -211,7 +205,6 @@ const AdminDashboard: React.FC<Props> = ({ setIsAdminLoggedIn }) => {
             </button>
           </h2>
 
-          {/* Orders Table */}
           <h2 className="text-left text-xl font-semibold mb-6">Orders</h2>
           {loading ? (
             <p className="text-left">Loading orders...</p>
