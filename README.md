@@ -1,69 +1,69 @@
-# React + TypeScript + Vite
+# Edible Mart Web App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A responsive e-commerce application that simplifies the process of booking food orders via a user-friendly form, with a secure admin dashboard for managing and exporting order records.
 
-Currently, two official plugins are available:
+**Live Demo:** [(https://edible-mart.vercel.app/)]
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+[Edible Mart Screenshot](./public/edible.png)
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Project Overview
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+Edible Mart is a full-stack web application designed to streamline online food ordering. It features a clean, intuitive interface for customers to place orders and a secure, feature-rich dashboard for administrators to manage the service. The project was built with a focus on modern web technologies, responsive design, and a modular code structure.
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+---
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## Key Features
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+- **Customer Ordering Form:** A simple, responsive form for users to place food orders.
+- **Real-Time Data Storage:** Integrated with Supabase to handle order submissions, database storage, and real-time data access.
+- **Secure Admin Dashboard:** A login-protected dashboard for administrators.
+- **Order Management:** Admins can view all orders in a structured table.
+- **PDF Export:** Admins can download and export order records as PDF files.
+- **Form Control:** Admins have the ability to disable the public order form directly from the dashboard.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+---
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## Tech Stack
+
+- **Frontend:** React, TypeScript, Tailwind CSS
+- **Backend & Database:** Supabase (for Authentication, Database, and Real-Time features)
+- **Deployment:** Vercel
+
+---
+
+## Getting Started
+
+To get a local copy up and running, follow these simple steps.
+
+### Prerequisites
+
+- Node.js (v16 or later)
+- npm
+
+### Installation
+
+1.  Clone the repo
+    ```sh
+    git clone https://github.com/your-username/edible-mart-web-app.git
+    ```
+2.  Install NPM packages
+    ```sh
+    npm install
+    ```
+3.  Set up your environment variables in a `.env` file for Supabase.
+    ```
+    REACT_APP_SUPABASE_URL='YOUR_SUPABASE_URL'
+    REACT_APP_SUPABASE_ANON_KEY='YOUR_SUPABASE_ANON_KEY'
+    ```
+4.  Run the application
+    ```sh
+    npm start
+    ```
+
+---
+
+## Challenges and Learnings
+
+One of the main challenges in this project was implementing the secure admin dashboard. I solved this by leveraging Supabase's built-in authentication. I created protected routes in React that check the user's authentication state before rendering the dashboard components. This taught me a great deal about managing user sessions, securing application routes, and integrating a third-party authentication service into a React application. I am proud of the result, which is a robust and secure system for managing sensitive order data.
