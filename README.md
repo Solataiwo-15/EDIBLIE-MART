@@ -46,7 +46,7 @@ To get a local copy up and running, follow these simple steps.
 
 1.  Clone the repo
     ```sh
-    git clone https://github.com/your-username/edible-mart-web-app.git
+    git clone https://github.com/Solataiwo-15/edible-mart-web-app.git
     ```
 2.  Install NPM packages
     ```sh
