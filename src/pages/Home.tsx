@@ -172,8 +172,8 @@ const Home: React.FC = () => {
   return (
     <div className="max-w-xl mx-auto px-4 sm:px-6 lg:max-w-3xl lg:px-8 py-6 pt-16">
       <OrderInfo
-        slaughterDate="Saturday, 1st Nov"
-        orderDeadline="Thursday, 31th Nov 11:59 PM"
+        slaughterDate="Saturday, 15th Nov"
+        orderDeadline="Thursday, 13th Nov 11:59 PM"
         cowHeadPrice="Ranges between ₦50,000 - ₦70,000"
         slotPrice="₦7,500"
         cowLegs="4 available(FCFS) Price ranges between ₦7,000 - ₦9,000"
